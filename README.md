@@ -136,6 +136,111 @@ Therefore, no usable set can provide the required element B.
 
 The branch 010? can be pruned without examining either 0100 or 0101.
 
+### Backtracking Tree Example
+
+For the example
+
+```text
+S1 = {A, B}
+S2 = {B, C}
+S3 = {C, D}
+
+V = {A, B, C, D}
+```
+
+the search tree makes one decision for each element of `V`.
+
+```text
+                         ????
+                       /      \
+                    0???      1???
+                   /   \      /   \
+                00??   01?? 10??   11??
+                /       / \    X     / \
+             000?    010? 011?     110? 111?
+             /  \      X   / \      / \   / \
+          0000 001?       0110 0111 1100 1101 1110 1111
+           ✓    / \         ✓    ✓    ✓    X    ✓    ✓
+              0010 0011
+                X    ✓
+```
+
+Here:
+
+```text
+✓ = valid union
+X = branch is impossible and is pruned
+? = element has not been decided yet
+```
+
+For example, consider the branch:
+
+```text
+010?
+```
+
+Using the element order
+
+```text
+A B C D
+0 1 0 ?
+```
+
+this means:
+
+- `A` is forbidden
+- `B` is required
+- `C` is forbidden
+- `D` is undecided
+
+The extension test determines that this branch is impossible:
+
+```text
+S1 = {A, B}  -> cannot use because A is forbidden
+S2 = {B, C}  -> cannot use because C is forbidden
+S3 = {C, D}  -> cannot use because C is forbidden
+```
+
+No remaining input set can provide the required element `B`.
+
+Therefore the algorithm stops at:
+
+```text
+010?  X
+```
+
+and does not explore:
+
+```text
+0100
+0101
+```
+
+Similarly,
+
+```text
+10??
+```
+
+is pruned because it requires `A` while forbidding `B`. The only input
+set containing `A` is `S1 = {A, B}`, which cannot be used because it
+would also introduce the forbidden element `B`.
+
+The valid leaves correspond exactly to the distinct unions:
+
+```text
+0000 -> {}
+0011 -> {C, D}
+0110 -> {B, C}
+0111 -> {B, C, D}
+1100 -> {A, B}
+1110 -> {A, B, C}
+1111 -> {A, B, C, D}
+```
+
+Thus, each valid union is represented by one leaf, while impossible
+groups of candidate subsets can be eliminated before reaching the leaves.
+
 
 ## 5. Backtracking Algorithm
 
